@@ -1,0 +1,92 @@
+---
+title: "data import and cleaning for epic app"
+author: "John Chapman"
+date: "July 10, 2019"
+output: html_document
+---
+
+load packages
+```{r}
+library(RSQLite)
+library(dplyr)
+library(readr)
+
+```
+
+
+## Import Data
+
+location of "epicdb.sqlite" file on GoldenParish:
+"~/OneDrive - Southern Virginia University/R-Studio/EPIC/data/epicdb.sqlite"
+```{r}
+sqlitePath <- "~/OneDrive - Southern Virginia University/R-Studio/EPIC/data/epicdb.sqlite"
+table <- "master1"
+```
+
+## loadData and saveData functions
+```{r}
+saveData <- function(data) {
+  # Connect to the database
+  db <- dbConnect(SQLite(), sqlitePath)
+  # Construct the update query by looping over the data fields
+  query <- sprintf(
+    "INSERT INTO %s (%s) VALUES ('%s')",
+    table, 
+    paste(names(data), collapse = ", "),
+    paste(data, collapse = "', '")
+  )
+  # Submit the update query and disconnect
+  dbGetQuery(db, query)
+  dbDisconnect(db)
+}
+
+loadData <- function(table) {
+  # Connect to the database
+  db <- dbConnect(SQLite(), sqlitePath)
+  # Construct the fetching query
+  query <- sprintf("SELECT * FROM %s", table)
+  # Submit the fetch query and disconnect
+  data <- dbGetQuery(db, query)
+  dbDisconnect(db)
+  data
+}
+
+```
+
+Call the loadData Function:
+```{r}
+system.time(master1 <- loadData(table)) # 22.987 seconds
+
+```
+
+Create a vector of occupation categories
+```{r}
+
+```
+
+
+create a vector of degree categories
+```{r}
+
+```
+
+
+Is it true that a high amount of employees in a given occupation (with a specific degree) is also an indication that there is an institution granting those degrees near by? (this is probably not necessarily an indicator of rank--in the degree--but it could be useful for internship or changing companies)
+
+What is the value of identifying these occupation-degree clusters by geography/area?
+Is there a difference in salary or opportunities or job security for pursuing an occupation in an occupation-degree cluster rather than an occupation/degree combination outside of a geographic cluster area?
+Do these occupation-degree clusters even exist?
+Do they change over time?  Do they migrate/move?
+
+
+What data do I need?
+Occupation data by MSA 
+CIP degrees (by number granted?) by MSA (?)
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
