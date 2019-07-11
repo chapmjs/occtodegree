@@ -10,6 +10,7 @@ load packages
 library(RSQLite)
 library(dplyr)
 library(readr)
+library(readxl)
 
 ```
 
@@ -54,7 +55,7 @@ loadData <- function(table) {
 ```
 
 Call the loadData Function:
-```{r}
+```{r eval=FALSE}
 system.time(master1 <- loadData(table)) # 22.987 seconds
 
 ```
@@ -70,22 +71,50 @@ create a vector of degree categories
 
 ```
 
-
-Is it true that a high amount of employees in a given occupation (with a specific degree) is also an indication that there is an institution granting those degrees near by? (this is probably not necessarily an indicator of rank--in the degree--but it could be useful for internship or changing companies)
-
-What is the value of identifying these occupation-degree clusters by geography/area?
-Is there a difference in salary or opportunities or job security for pursuing an occupation in an occupation-degree cluster rather than an occupation/degree combination outside of a geographic cluster area?
-Do these occupation-degree clusters even exist?
-Do they change over time?  Do they migrate/move?
-
-
-What data do I need?
-Occupation data by MSA 
-CIP degrees (by number granted?) by MSA (?)
+# Questions for data analysis
+* Is it true that a high amount of employees in a given occupation (with a specific degree) is also an indication that there is an institution granting those degrees near by? (this is probably not necessarily an indicator of rank--in the degree--but it could be useful for internship or changing companies)
+* What is the value of identifying these occupation-degree clusters by geography/area?
+  + Is there a difference in salary or opportunities or job security for pursuing an occupation in an occupation-degree cluster rather than an occupation/degree combination outside of a geographic cluster area?
+    + Do these occupation-degree clusters even exist?
+    + Do they change over time?  Do they migrate/move?
+    + What is the correlation between location quotient (BLS figure) and # of degrees granted
+    + What about distance between school and MSA? 10 mi? 25 mi? 50 mi?
 
 
+What data do I need to answer these questions?
 
-```{r pressure, echo=FALSE}
+1. Occupation data by MSA 
+```{r eval=FALSE}
+msa18 <- read_excel("data/oesm18ma/MSA_M2018_dl.xlsx", 
+    col_types = c("text", "numeric", "text", 
+        "text", "text", "text", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "text", "numeric"))
+View(msa18)
+```
+
+```{r}
+msa18_lq_20 <- msa18 %>%
+  filter(`LOC QUOTIENT` > 20) %>%
+  arrange(`AREA_NAME`,desc(`LOC QUOTIENT`))
+
+msa18_lq_occ <- msa18 %>%
+  filter(`LOC QUOTIENT` > 10 & `OCC_GROUP` == "detailed") %>%
+  arrange(`OCC_TITLE`, desc(`LOC QUOTIENT`))
+
+
+  
+```
+
+2. CIP degrees (by number granted?) by MSA (?)
+
+
+
+```{r pressure, eval=FALSE}
 plot(pressure)
 ```
 
